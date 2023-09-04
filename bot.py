@@ -93,7 +93,38 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         )
 
 
+# handler /today
+async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user = update.effective_user
+    
+    events = db.getEvents()
+    lines = "\n"
+    for event in events:
+        lines += f"{event['hour']}:{event['minute']} {event['message']}\n";
 
+    await update.message.reply_html(
+            rf"Товарищ, вот график работы на сегодня {lines}",
+        reply_markup=ForceReply(selective=True),
+    )
+ 
+
+async def week_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    wtype = db.getWeekType()
+
+    await update.message.reply_html(
+            rf"Товарищ! Сейчас {wtype} профиль недели",
+            reply_markup=ForceReply(selective=True),
+            )
+
+
+# handler /week
+async def week_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    wtype = db.getWeekType()
+
+    await update.message.reply_html(
+            rf"Товарищ! Сейчас {wtype} профиль недели",
+            reply_markup=ForceReply(selective=True),
+            )
 
 def bot_begin(token) -> None:
 
@@ -105,6 +136,8 @@ def bot_begin(token) -> None:
     # Добавление обработчиков команд
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("stop", stop))
+    application.add_handler(CommandHandler("today", today))
+    application.add_handler(CommandHandler("week", week_type))
 
     # run polling 
     try:
