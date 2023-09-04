@@ -7,7 +7,7 @@ import bot
 
 eventsl = []
 
-def make_malling(message):
+def make_malling(message) -> None:
     print(f"Send message: '{message}'")
     chats = db.getChats()
     for chat in chats:
@@ -17,11 +17,10 @@ def make_malling(message):
             print("error send")
         
 
-def eclipse():
-    
+def eclipse() -> None:
     current_datetime = datetime.datetime.now()
 
-    print(f"[{current_datetime}]minute")
+    print(f"[{current_datetime}] minute")
     events = db.getEvents()
     
     current_datetime = datetime.datetime.now()
@@ -35,16 +34,14 @@ def eclipse():
             make_malling(event['message'])
 
 
-
-def timer():
+def thread_worker() -> None:
     schedule.every(1).minutes.do(eclipse)
 
     while True:
-        # Проверяем и выполняем запланированные задачи
         schedule.run_pending()
         time.sleep(1)
 
-def runTimedPolling():
-    thread = threading.Thread(target=timer)
-    thread.start()  # Запуск потока
+def runTimedPolling() -> None:
+    thread = threading.Thread(target=thread_worker)
+    thread.start() 
     

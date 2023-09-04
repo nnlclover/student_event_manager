@@ -3,6 +3,10 @@ import datetime
 
 db_name = 'database.db'
 
+def setDbPath(path) -> None:
+    global db_name
+    db_name = path
+
 def getCon():
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
@@ -34,10 +38,9 @@ def createNewTables() -> None:
         cursor.execute('''CREATE TABLE week_type(type INTEGER PRIMARY KEY);''')
         conn.commit()
     except sqlite3.OperationalError as e:
-
         pass
-
     conn.close()
+
 
 def getChats():
     with sqlite3.connect(db_name) as conn:
@@ -62,7 +65,6 @@ def getEvents():
         events_book.append({"hour":event[3],"minute":event[4], "message":event[5]})
     conn.close()
     return events_book
-
 
 
 def getWeekType():
@@ -98,7 +100,6 @@ def rm_chat(chat_id):
         existing_row = cursor.fetchone()
     
         if existing_row:
-        # Если строка существует, удаляем её
             cursor.execute('DELETE FROM chats WHERE chat_id = ?', (chat_id,))
             conn.commit()
             print(f"Chat ID {chat_id} успешно удален.")

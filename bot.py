@@ -61,7 +61,7 @@ def sendSimpleMessage(chat_id, text):
             return False
     return True
 
-
+# handler /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
@@ -77,7 +77,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
          )
 
 
-
+# handler /stop
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
@@ -93,9 +93,6 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         )
 
 
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
-
 
 
 def bot_begin(token) -> None:
@@ -109,9 +106,8 @@ def bot_begin(token) -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("stop", stop))
 
-
+    # run polling 
     try:
-        # Запуск приложения
         application.run_polling(allowed_updates=Update.ALL_TYPES)
     except KeyboardInterrupt:
         # Обработка прерывания по Ctrl+C
