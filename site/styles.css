@@ -1,0 +1,100 @@
+.main {
+    margin-left: auto;
+    margin-right: auto;
+    background-color: gray;
+    height: 100%;
+    width: 90%;
+    color: white;
+}
+
+.editor {
+    width: 89%;
+    border: 3px solid black;
+    margin-left: auto;
+    margin-right: auto;
+    background-color:blue;
+    padding: 20px; /* Внутренние отступы по всем сторонам в 20px */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.dos-button {
+    display: inline-block;
+    padding: 2px 5px;
+    background-color: rgb(220, 220, 220);
+    color: #000;
+    border: 1px solid #fff;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Стиль кнопки при наведении */
+.dos-button:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+/* Стиль кнопки при активации (нажатии) */
+.dos-button:active {
+    background-color: #888;
+    color: #fff;
+}
+
+
+.button_group {
+    right: 10px;
+    margin-right: 10px;
+    float: right;
+}
+
+.time_label {
+    width: 30px;
+    left:auto;
+    right: auto;
+}
+.time_select
+{
+    padding: 2px;
+    display: inline; /* Установите контейнеру свойство display: inline; */
+    border: 2px solid white;
+    width: 80.1px;
+    background-color: black;
+}
+
+.day_head{
+    text-align: center;
+    width: 120px;
+    padding: 5px;
+    color: black;
+    background-color: whitesmoke;
+}
+
+.table_view {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.high_sel {
+    width: 89%;
+    border: 3px solid black;
+    margin-left: auto;
+    margin-right: auto;
+    background-color:blue;
+    padding: 20px; /* Внутренние отступы по всем сторонам в 20px */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    table {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    th, td {
+      min-width: 100px; /* Ширина ячейки */
+      display: inline-block;
+    }
+  }

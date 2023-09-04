@@ -12,6 +12,13 @@ def getCon():
     cursor = conn.cursor()
     return {conn, cursor}
 
+def updateNumeric() -> None:
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE temp_table SET id = id - (SELECT MIN(id) - 1 FROM temp_table)")
+    
+
+
 def createNewTables() -> None:
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
@@ -87,8 +94,10 @@ def add_chat(chat_id):
         try:
             cursor.execute('INSERT INTO chats (chat_id) VALUES (?)', (chat_id,))
             conn.commit()
+            updateNumeric()
             return True
         except(sqlite3.IntegrityError):
+            updateNumeric()
             return False
 
 
@@ -103,9 +112,11 @@ def rm_chat(chat_id):
             cursor.execute('DELETE FROM chats WHERE chat_id = ?', (chat_id,))
             conn.commit()
             print(f"Chat ID {chat_id} успешно удален.")
+            updateNumeric()
             return True
         else:
             print(f"Chat ID {chat_id} не найден в базе данных.")
+            updateNumeric()
             return False
 
  

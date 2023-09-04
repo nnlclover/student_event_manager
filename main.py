@@ -2,9 +2,21 @@ import db
 import bot
 import timemanager
 import threading
+import configparser
 
 def main() -> None:
-    TOKEN = "6440862149:AAGHpeE9Y9bWRQ6URNrF7n5JbW0q3xi0QN8"
+    TOKEN = ""
+
+    config = configparser.ConfigParser()
+    config.read('token')
+    TOKEN = config['Telegram']['token']
+
+
+
+    if len(TOKEN) == 0:
+        print("not found token file")
+        exit()
+
     db.setDbPath("database.db")
 
     db.createNewTables()

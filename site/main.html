@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления ботом</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.css" rel="stylesheet" />
+
+</head>
+
+<body>
+    <div class="main">
+        <div class="high_sel">
+            <label for="select_prof">Профиль недели: </label>
+            <select name="" id="select_prof">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+
+
+        <div class="editor">
+
+            <label for="time_select">Время события:</label>
+            <div id="time_select" class="time_select">
+                <input class="time_label" type="text" name="" id="">
+                -:-
+                <input class="time_label" type="text" name="" id="">
+            </div>
+
+            </br>
+            </br>
+
+            <label for="message">Сообщение:</label>
+            <input class="message" id="message" type="text">
+
+            <div class="button_group">
+                <input class="dos-button" type="button" value="Редактировать">
+                <input class="dos-button" type="button" value="Добавить">
+            </div>
+
+        </div>
+
+        <div class="table_view">
+            <table style="margin-left: auto;margin-right: auto;" border="1">
+                <tr>
+                    <td>
+                        <div class="day_head">Понедельник</div>
+                        <table border="1">
+                            <tr>as</tr>
+                        </table>
+                    </td>
+                    <td>
+                        <div class="day_head">Вторник</div>
+                        <table border="1">
+                            <tr>as</tr>
+                        </table>
+                    </td>
+                    <td>
+                        <div class="day_head">Среда</div>
+                        <table border="1">
+                            <tr>as</tr>
+                        </table>
+                    </td>
+                    <td>
+                        <div class="day_head">Четверг</div>
+                        <table border="1">
+                            <tr>as</tr>
+                        </table>
+                    </td>
+                    <td>
+                        <div class="day_head">Пятница</div>
+                        <table border="1">
+                            <tr>as</tr>
+                        </table>
+                    </td>
+                    <td>
+                        <div class="day_head">Суббота</div>
+                        <table border="1">
+                            <tr>as</tr>
+                        </table>
+                    </td>
+                    <td>
+                        <div class="day_head">Воскресенье</div>
+                        <table border="1">
+                            <tr>as</tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+
+                </tr>
+            </table>
+        </div>
+
+
+    </div>
+    <!--script>
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768) {
+          document.querySelector('table').style.overflowX = 'auto';
+          document.querySelector('table').style.whiteSpace = 'nowrap';
+        } else {
+          document.querySelector('table').style.overflowX = 'auto';
+          document.querySelector('table').style.whiteSpace = 'normal';
+        }
+      });
+    </script>      
+    <!--script>
+        // Функция для добавления события в таблицу
+        function addEvent(day, eventText) {
+            const table = document.querySelector('table');
+            const rows = table.getElementsByTagName('tr');
+
+            // Находим строку дня, соответствующую выбранному дню
+            const row = rows[0].querySelector(`th:contains('${day}')`).parentNode;
+
+            // Создаем новую ячейку для события и добавляем текст
+            const cell = document.createElement('td');
+            cell.textContent = eventText;
+
+            // Проверяем, влезает ли событие в текущую строку
+            let added = false;
+            for (let i = 1; i < row.cells.length; i++) {
+                if (!row.cells[i].textContent) {
+                    row.cells[i].appendChild(cell);
+                    added = true;
+                    break;
+                }
+            }
+
+            // Если не влезло, создаем новую строку
+            if (!added) {
+                const newRow = table.insertRow(-1);
+                newRow.insertCell().appendChild(cell);
+            }
+        }
+
+        // Функция для обновления при изменении размера экрана
+        function handleResize() {
+            const table = document.querySelector('table');
+            const rows = table.getElementsByTagName('tr');
+            const firstRow = rows[0];
+
+            // Очищаем таблицу от ячеек
+            while (firstRow.cells.length > 5) {
+                firstRow.deleteCell(5);
+            }
+
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i].cells.length < firstRow.cells.length) {
+                    const emptyCellsCount = firstRow.cells.length - rows[i].cells.length;
+                    for (let j = 0; j < emptyCellsCount; j++) {
+                        rows[i].insertCell(-1);
+                    }
+                }
+            }
+        }
+
+        // Обработчик изменения размера экрана
+        window.addEventListener('resize', handleResize);
+
+        // Добавляем события при загрузке страницы (пример)
+        addEvent('Понедельник', 'Событие 1');
+        addEvent('Вторник', 'Событие 2');
+        addEvent('Среда', 'Событие 3');
+        addEvent('Четверг', 'Событие 4');
+        addEvent('Пятница', 'Событие 5');
+        addEvent('Понедельник', 'Событие 6');
+
+    </script-->
+</body>
+
+</html>
