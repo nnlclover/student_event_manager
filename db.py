@@ -13,6 +13,7 @@ def getCon():
     return {conn, cursor}
 
 def updateNumeric() -> None:
+    return 
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
         cursor.execute("UPDATE temp_table SET id = id - (SELECT MIN(id) - 1 FROM temp_table)")
