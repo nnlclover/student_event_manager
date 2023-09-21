@@ -17,9 +17,6 @@ def main() -> None:
         print("not found token file")
         exit()
 
-    db.setDbPath("database.db")
-
-    db.createNewTables()
 
     timemanager.runTimedPolling()
     

@@ -51,6 +51,7 @@ CONTEXT_TOKEN = ""
 # Send text to chat_id
 def sendSimpleMessage(chat_id, text):
     r = requests.get(f'https://api.telegram.org/bot{CONTEXT_TOKEN}/sendmessage?chat_id={chat_id}&text={text}')
+    db.logging(f"sendSimpleMessage('{text}')", chat_id)
     if r.status_code != 200:
         body = r.json()
         if body['ok'] != True:
@@ -61,6 +62,8 @@ def sendSimpleMessage(chat_id, text):
             return False
     return True
 
+
+
 # handler /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
@@ -68,13 +71,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if db.add_chat(update.message.chat_id):
         await update.message.reply_html(
             rf"Товарищ, вы подписались на рассылку событий!",
-            reply_markup=ForceReply(selective=True),
         )
+        db.logging(f"/start Товарищ, вы подписались на рассылку событий!", update.message.chat_id)
     else:
          await update.message.reply_html(
             rf"Товарищ, вы уже подписаны на рассылку событий!",
-            reply_markup=ForceReply(selective=True),
          )
+         db.logging(f"/start Товарищ, вы уже подписаны на рассылку событий!", update.message.chat_id)
+
+
 
 
 # handler /stop
@@ -86,15 +91,67 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
           rf"Товарищ, вы отписались от рассылки событий!",
             reply_markup=ForceReply(selective=True),
         )
+        db.logging(f"/stop Товарищ, вы отписались от рассылки событий!", update.message.chat_id)
     else:
         await update.message.reply_html(
           rf"Товарищ, вы не зарегистрированы чтобы выполнить данную команду",
             reply_markup=ForceReply(selective=True),
         )
+        db.logging(f"/stop Товарищ, вы не зарегистрированы чтобы выполнить данную команду", update.message.chat_id)
 
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Echo the user message."""
+    await update.message.reply_text(update.message.text)
+    db.logging(update.message.text, update.message.chat_id)
+
+
+async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    users = db.getUsers()
+    usss = []
+    for user in users:
+        if user["state"] == 200:
+            sendSimpleMessage(user["chat_id"], " ".join(context.args))
+            usss.append(user["second_name"])
+
+    await update.message.reply_html(
+          rf"Сообщения были откправлены {usss}",
+        )
+    db.logging(f"/msg Сообщения были откправлены {usss}", update.message.chat_id)
+
+
+
+
+
+def bot_begin(token) -> None:
+
+    global CONTEXT_TOKEN
+    CONTEXT_TOKEN = token
+
+    application = Application.builder().token(CONTEXT_TOKEN).build()
+
+    # Добавление обработчиков команд
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("stop", stop))
+    application.add_handler(CommandHandler("msg", msg))
+    #application.add_handler(CommandHandler("today", today))
+    #application.add_handler(CommandHandler("week", week_type))
+    #application.add_handler(CommandHandler("reg", reg))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+    # run polling 
+    try:
+        application.run_polling(allowed_updates=Update.ALL_TYPES)
+    except KeyboardInterrupt:
+        # Обработка прерывания по Ctrl+C
+        pass
+
+
+
+
+""""
 
 # handler /today
 async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    return 
     user = update.effective_user
     
     events = db.getEvents()
@@ -126,22 +183,14 @@ async def week_type(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             reply_markup=ForceReply(selective=True),
             )
 
-def bot_begin(token) -> None:
 
-    global CONTEXT_TOKEN
-    CONTEXT_TOKEN = token
 
-    application = Application.builder().token(CONTEXT_TOKEN).build()
+async def reg():
+    users = db.getUsers()
+    for user in users:
+        if(user["state"] == 0 and user["can"] == 0):
+            bot.SendSempleMessage(user["chat_id"], "Dear comrade, in order to prevent data leakage, I ask you to complete a simple registration. Write the command “/reg Ivanov Ivan, 01/01/2005, your city” and enter your data in this command. After you provide your data, the bot admin will check you (this will take approximately 24 hours). If you provide invalid data, you will be blocked.")
+    pass
 
-    # Добавление обработчиков команд
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("stop", stop))
-    application.add_handler(CommandHandler("today", today))
-    application.add_handler(CommandHandler("week", week_type))
 
-    # run polling 
-    try:
-        application.run_polling(allowed_updates=Update.ALL_TYPES)
-    except KeyboardInterrupt:
-        # Обработка прерывания по Ctrl+C
-        pass
+"""

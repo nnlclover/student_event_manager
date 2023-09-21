@@ -7,33 +7,49 @@ import bot
 
 eventsl = []
 
+
+# send mail for all
 def make_malling(message) -> None:
     print(f"Send message: '{message}'")
-    chats = db.getChats()
-    for chat in chats:
-        try:
-            bot.sendSimpleMessage(chat[1], message)
-        except:
-            print("error send")
+    users = db.getUsers()
+
+    for user in users:
+        if user["state"] == 200: 
+            try:
+                print(user["second_name"])
+                text = f"Уважаемый {user['second_name']}! Через 5 минут у вас {message}."
+                #bot.sendSimpleMessage(user["chat_id"], message)
+            except:
+                print("error send")
         
+
 
 def eclipse() -> None:
     current_datetime = datetime.datetime.now()
 
     print(f"[{current_datetime}] minute")
-    events = db.getEvents()
     
-    current_datetime = datetime.datetime.now()
+    now = datetime.datetime.now()
+
+    # Добавьте 5 минут к текущему времени
+    new_time = now + datetime.timedelta(minutes=5)
+
+    # Преобразуйте новое время в строку в формате "ЧЧ:ММ"
+    formatted_time = new_time.strftime("%H:%M")
+
+    # Выведите отформатированное время
+    print(formatted_time)    
+
+    print(formatted_time)
+    event = db.getEvent(formatted_time)
+    print(event)
+
+    if(event != None):
+        make_malling(event)
     
-    hour = current_datetime.hour
-    minute = current_datetime.minute
-
-    for event in events:
-        print(event)
-        if event['hour'] == hour and event['minute'] == minute:
-            make_malling(event['message'])
 
 
+## work dont touch
 def thread_worker() -> None:
     schedule.every(1).minutes.do(eclipse)
 

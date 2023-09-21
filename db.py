@@ -1,82 +1,69 @@
 import sqlite3 
 import datetime
+import mysql.connector
 
-db_name = 'database.db'
+host = "127.0.0.1"
+port = 3306
+db = "univer"
 
-def setDbPath(path) -> None:
-    global db_name
-    db_name = path
-
-def getCon():
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    return {conn, cursor}
-
-def updateNumeric() -> None:
-    return 
-    with sqlite3.connect(db_name) as conn:
-        cursor = conn.cursor()
-        cursor.execute("UPDATE temp_table SET id = id - (SELECT MIN(id) - 1 FROM temp_table)")
+def gc():
+    return mysql.connector.connect(
+            host = host,
+            port = port,
+            user="root",
+            password="rootNodeJS",
+            database=db
+    )
     
 
 
-def createNewTables() -> None:
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
 
+def getUsers():
+    users = []
     try:
-        cursor.execute('''CREATE TABLE chats(id INTEGER PRIMARY KEY AUTOINCREMENT, chat_id INTEGER UNIQUE, reg_time INTEGER);''')
-        conn.commit()
-    except sqlite3.OperationalError as e:
-        pass
+        db_connection = gc()
 
-    try:
-        cursor.execute('''CREATE TABLE IF NOT EXISTS events (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            week_type INTEGER NOT NULL,
-                            day INTEGER NOT NULL,
-                            hour INTEGER NOT NULL,
-                            minute INTEGER NOT NULL,
-                            message TEXT NOT NULL
-                        );''')
-        conn.commit()
-    except sqlite3.OperationalError as e:
-        pass
-    try:
-        cursor.execute('''CREATE TABLE week_type(type INTEGER PRIMARY KEY);''')
-        conn.commit()
-    except sqlite3.OperationalError as e:
-        pass
-    conn.close()
-
-
-def getChats():
-    with sqlite3.connect(db_name) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM chats")
-
-        return cursor.fetchall()
+        cursor = db_connection.cursor()
+        sql_query = "SELECT * FROM users"
+        cursor.execute(sql_query)
+        result = cursor.fetchall()
+    
+        for row in result:
+            obj = {
+                "id": row[0],
+                "chat_id": row[1],
+                "name": row[2],
+                "second_name": row[3],
+                "state": row[4],
+                "date": row[5],
+                "city": row[6],
+            }
+            users.append(obj)
+        db_connection.close()
+        return users
+    except e:
+        print(e)
 
 
-def getEvents():
-    day_num = getWeekType()
+# for update
+#cursor.execute("UPDATE temp_table SET id = id - (SELECT MIN(id) - 1 FROM temp_table)")
+
+# get only one event for setted time
+def getEvent(time):
     current_day = datetime.date.today().isoweekday()
-
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-
-    cursor.execute(f'SELECT * FROM events WHERE day={current_day} AND week_type={day_num}')
-    events = cursor.fetchall()
-    
-    events_book = []
-    for event in events:
-        events_book.append({"hour":event[3],"minute":event[4], "message":event[5]})
-    conn.close()
-    return events_book
+    try: 
+        conn = gc()
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT message FROM events WHERE week = (SELECT type FROM week_type) AND list_num = (SELECT number FROM times WHERE time_start = '{time}') AND day = {current_day};")
+        event = cursor.fetchone()
+        conn.close()
+    except e:
+        print(e) 
+    return event
 
 
 def getWeekType():
-    conn = sqlite3.connect(db_name)
+    conn = gc()
     cursor = conn.cursor()
 
     cursor.execute('SELECT * FROM week_type')
@@ -87,37 +74,45 @@ def getWeekType():
     conn.close()
     return week_type
 
+def logging(message, chat_id):
+    with gc() as conn:
+        cursor = conn.cursor()
+        # Используйте параметризованный запрос с %s для вставки значений
+        query = "INSERT INTO logging(message, chat_id) VALUES(%s, %s)"
+        values = (message, chat_id)
+        cursor.execute(query, values)
+        conn.commit()
+
 
 def add_chat(chat_id):
-    with sqlite3.connect(db_name) as conn:
+    with gc() as conn:
         cursor = conn.cursor()
+    
+        cursor.execute(f'SELECT * FROM users WHERE chat_id = {chat_id} LIMIT 1')
 
-        try:
-            cursor.execute('INSERT INTO chats (chat_id) VALUES (?)', (chat_id,))
+        res = cursor.fetchone()
+        if(not res):
+            cursor.execute(f'INSERT INTO users (chat_id) VALUES({chat_id})')
             conn.commit()
-            updateNumeric()
             return True
-        except(sqlite3.IntegrityError):
-            updateNumeric()
+        else:
             return False
 
 
 def rm_chat(chat_id):
-    with sqlite3.connect(db_name) as conn:
+    with gc() as conn:
         cursor = conn.cursor()
 
-        cursor.execute('SELECT * FROM chats WHERE chat_id = ?', (chat_id,))
+        cursor.execute(f'SELECT * FROM users WHERE chat_id = {chat_id} LIMIT 1')
         existing_row = cursor.fetchone()
     
         if existing_row:
-            cursor.execute('DELETE FROM chats WHERE chat_id = ?', (chat_id,))
+            cursor.execute(f'DELETE FROM users WHERE chat_id = {chat_id}')
             conn.commit()
             print(f"Chat ID {chat_id} успешно удален.")
-            updateNumeric()
             return True
         else:
             print(f"Chat ID {chat_id} не найден в базе данных.")
-            updateNumeric()
             return False
 
  
