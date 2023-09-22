@@ -19,7 +19,7 @@ def make_malling(message) -> None:
         if user["state"] == 200 or user["state"] == 400: 
             try:
                 print(user["second_name"])
-                text = f"Dear {user['second_name']}! {message}."
+                text = f"Уважаемый {user['second_name']}! Через 5 минут {message}."
                 bot.sendSimpleMessage(user["chat_id"], message)
             except:
                 print("error send")
