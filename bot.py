@@ -117,14 +117,17 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 #------------------------------------------------------------------------------
 
 async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    db.logging(update.message.text, update.message.chat_id)
+
     users = db.getUsers()
     
-    admin = {}
+    admin = None
     for user in users:
         if user["state"] == 400 and user["chat_id"] == update.message.chat_id:
             admin = user
 
-    if admin == {}:
+    if admin == None:
+        db.logging("/msg unauthorized user", update.message.chat_id)
         return
 
     usss = []
