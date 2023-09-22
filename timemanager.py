@@ -7,8 +7,10 @@ import bot
 
 eventsl = []
 
-
+#------------------------------------------------------------------------------
 # send mail for all
+#------------------------------------------------------------------------------
+
 def make_malling(message) -> None:
     print(f"Send message: '{message}'")
     users = db.getUsers()
@@ -22,7 +24,9 @@ def make_malling(message) -> None:
             except:
                 print("error send")
         
-
+#------------------------------------------------------------------------------
+# time loop period 1 second
+#------------------------------------------------------------------------------
 
 def eclipse() -> None:
     current_datetime = datetime.datetime.now()
@@ -30,14 +34,9 @@ def eclipse() -> None:
     print(f"[{current_datetime}] minute")
     
     now = datetime.datetime.now()
-
-    # Добавьте 5 минут к текущему времени
-    new_time = now + datetime.timedelta(minutes=5)
-
-    # Преобразуйте новое время в строку в формате "ЧЧ:ММ"
+    new_time = now + datetime.timedelta(minutes=5)    
     formatted_time = new_time.strftime("%H:%M")
-
-    # Выведите отформатированное время
+    
     print(formatted_time)    
 
     event = db.getEvent(formatted_time)
@@ -47,14 +46,20 @@ def eclipse() -> None:
         make_malling(event)
     
 
+#------------------------------------------------------------------------------
+# polling timer
+#------------------------------------------------------------------------------
 
-## work dont touch
 def thread_worker() -> None:
     schedule.every(1).minutes.do(eclipse)
 
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+#------------------------------------------------------------------------------
+# run second thread for timer
+#------------------------------------------------------------------------------
 
 def runTimedPolling() -> None:
     thread = threading.Thread(target=thread_worker)
