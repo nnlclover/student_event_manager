@@ -14,11 +14,11 @@ def make_malling(message) -> None:
     users = db.getUsers()
 
     for user in users:
-        if user["state"] == 200: 
+        if user["state"] == 200 or user["state"] == 400: 
             try:
                 print(user["second_name"])
                 text = f"Уважаемый {user['second_name']}! Через 5 минут у вас {message}."
-                #bot.sendSimpleMessage(user["chat_id"], message)
+                bot.sendSimpleMessage(user["chat_id"], message)
             except:
                 print("error send")
         
@@ -40,7 +40,6 @@ def eclipse() -> None:
     # Выведите отформатированное время
     print(formatted_time)    
 
-    print(formatted_time)
     event = db.getEvent(formatted_time)
     print(event)
 
