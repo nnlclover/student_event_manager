@@ -1,7 +1,5 @@
 import logging
-import sqlite3
 import requests
-import schedule
 import time
 import threading
 import db
@@ -48,65 +46,87 @@ logger = logging.getLogger(__name__)
 #--------------------------------------------
 CONTEXT_TOKEN = ""
 
+#------------------------------------------------------------------------------
 # Send text to chat_id
+#------------------------------------------------------------------------------
+
 def sendSimpleMessage(chat_id, text):
-    r = requests.get(f'https://api.telegram.org/bot{CONTEXT_TOKEN}/sendmessage?chat_id={chat_id}&text={text}')
-    db.logging(f"sendSimpleMessage('{text}')", chat_id)
+    r = requests.get(f"""https://api.telegram.org/bot{CONTEXT_TOKEN}/sendmessage
+    ?chat_id={chat_id}&text={text}""")
     if r.status_code != 200:
         body = r.json()
         if body['ok'] != True:
-            sas = f'Error sendMessage: " {str(body)} chat_id="{chat_id}" text="{text}"'
+            sas = f"""Error sendMessage: \" {str(body)} chat_id=\"{chat_id}\" 
+            text="{text}"""
             print(sas)
-            with open("error.log", "a") as f:
-                f.write(f"{sas}\r\n")
+            db.logging(f"sendSimpleMessage('{text}') failed! {sas}", chat_id)
             return False
+    db.logging(f"sendSimpleMessage('{text}')", chat_id)
     return True
 
 
-
+#------------------------------------------------------------------------------
 # handler /start
+#------------------------------------------------------------------------------
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /start is issued."""
     user = update.effective_user
     if db.add_chat(update.message.chat_id):
         await update.message.reply_html(
             rf"Товарищ, вы подписались на рассылку событий!",
         )
-        db.logging(f"/start Товарищ, вы подписались на рассылку событий!", update.message.chat_id)
+        db.logging(f"/start Товарищ, вы подписались на рассылку событий!",
+                  update.message.chat_id)
     else:
          await update.message.reply_html(
             rf"Товарищ, вы уже подписаны на рассылку событий!",
          )
-         db.logging(f"/start Товарищ, вы уже подписаны на рассылку событий!", update.message.chat_id)
+         db.logging(f"/start Товарищ, вы уже подписаны на рассылку событий!", 
+                   update.message.chat_id)
 
-
-
-
+#------------------------------------------------------------------------------
 # handler /stop
+#------------------------------------------------------------------------------
+
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /start is issued."""
     user = update.effective_user
     if db.rm_chat(update.message.chat_id):
         await update.message.reply_html(
           rf"Товарищ, вы отписались от рассылки событий!",
             reply_markup=ForceReply(selective=True),
         )
-        db.logging(f"/stop Товарищ, вы отписались от рассылки событий!", update.message.chat_id)
+        db.logging(f"/stop Товарищ, вы отписались от рассылки событий!",
+                   update.message.chat_id)
     else:
         await update.message.reply_html(
           rf"Товарищ, вы не зарегистрированы чтобы выполнить данную команду",
             reply_markup=ForceReply(selective=True),
         )
-        db.logging(f"/stop Товарищ, вы не зарегистрированы чтобы выполнить данную команду", update.message.chat_id)
+        db.logging(f"""/stop Товарищ, вы не зарегистрированы чтобы 
+        выполнить данную команду""", update.message.chat_id)
+
+#------------------------------------------------------------------------------
+# Log all messages 
+#------------------------------------------------------------------------------
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Echo the user message."""
-    await update.message.reply_text(update.message.text)
     db.logging(update.message.text, update.message.chat_id)
 
+#------------------------------------------------------------------------------
+# Sending a custom message from the admin 
+#------------------------------------------------------------------------------
 
 async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     users = db.getUsers()
+    
+    admin = {}
+    for user in users:
+        if user["state"] == 400 and user["chat_id"] == update.message.chat_id:
+            admin = user
+
+    if admin == {}:
+        return
+
     usss = []
     for user in users:
         if user["state"] == 200:
@@ -114,13 +134,14 @@ async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             usss.append(user["second_name"])
 
     await update.message.reply_html(
-          rf"Сообщения были откправлены {usss}",
+          rf"Сообщения были отправлены {usss}",
         )
-    db.logging(f"/msg Сообщения были откправлены {usss}", update.message.chat_id)
+    db.logging(f"/msg Сообщения были откправлены {usss}",
+              update.message.chat_id)
 
-
-
-
+#------------------------------------------------------------------------------
+# begin function
+#------------------------------------------------------------------------------
 
 def bot_begin(token) -> None:
 
