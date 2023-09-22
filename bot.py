@@ -4,6 +4,7 @@ import time
 import threading
 import db
 import asyncio
+import aiohttp
 
 from telegram import __version__ as TG_VER
 
@@ -51,13 +52,12 @@ CONTEXT_TOKEN = ""
 #------------------------------------------------------------------------------
 
 def sendSimpleMessage(chat_id, text):
-    r = requests.get(f"""https://api.telegram.org/bot{CONTEXT_TOKEN}/sendmessage
-    ?chat_id={chat_id}&text={text}""")
+    payload = { "chat_id": chat_id, "text": text }
+    r = requests.get(f"""https://api.telegram.org/bot{CONTEXT_TOKEN}/sendmessage""", params=payload)
     if r.status_code != 200:
         body = r.json()
         if body['ok'] != True:
-            sas = f"""Error sendMessage: \" {str(body)} chat_id=\"{chat_id}\" 
-            text="{text}"""
+            sas = f"""Error sendMessage: \" {str(body)} chat_id=\"{chat_id}\" text="{text}"""
             print(sas)
             db.logging(f"sendSimpleMessage('{text}') failed! {sas}", chat_id)
             return False
@@ -132,7 +132,7 @@ async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     usss = []
     for user in users:
-        if user["state"] == 200:
+        if user["state"] == 200 or user["state"] == 400:
             sendSimpleMessage(user["chat_id"], " ".join(context.args))
             usss.append(user["second_name"])
 
