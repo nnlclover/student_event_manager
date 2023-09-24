@@ -139,8 +139,38 @@ async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_html(
           rf"Сообщения были отправлены {usss}",
         )
-    db.logging(f"/msg Сообщения были откправлены {usss}",
+    db.logging(f"/msg Сообщения были отправлены {usss}",
               update.message.chat_id)
+
+#------------------------------------------------------------------------------
+# Get all events at that day
+#------------------------------------------------------------------------------
+
+async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    db.logging("/today", update.message.chat_id)
+
+    users = db.getUsers()
+    
+    admin = None
+    for user in users:
+        if (user["state"] == 200 or user["state"] == 400) and user["chat_id"] == update.message.chat_id:
+            admin = user
+
+    if admin == None:
+        db.logging("/today unauthorized user", update.message.chat_id)
+        return
+
+    events = db.getEventsToday()
+    
+    strings = "Вот список запланированных занятий на сегодня:"
+    for event in events:
+        strings += " в " + event["time"] + " - " + event["message"]
+
+    await update.message.reply_html(
+          strings,
+        )
+    
+
 
 #------------------------------------------------------------------------------
 # begin function
