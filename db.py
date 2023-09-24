@@ -18,7 +18,7 @@ def gc():
 def getEventsToday():
     with gc() as conn:
         cur = conn.cursor()
-        current_day = datetime.date.today().isoweekday()
+        current_day = 1#datetime.date.today().isoweekday()
         events = []
         cur.execute(f"SELECT message FROM events WHERE week = (SELECT type FROM week_type) AND day = {current_day};")
         res = cur.fetchall()

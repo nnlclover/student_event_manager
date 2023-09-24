@@ -164,8 +164,9 @@ async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     strings = "Вот список запланированных занятий на сегодня:"
     for event in events:
-        strings += " в " + event["time"] + " - " + event["message"]
+	    strings += f"  {event['time']} - {event['message']}"
 
+	
     await update.message.reply_html(
           strings,
         )
@@ -187,6 +188,7 @@ def bot_begin(token) -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("stop", stop))
     application.add_handler(CommandHandler("msg", msg))
+    application.add_handler(CommandHandler("today", today))
     #application.add_handler(CommandHandler("today", today))
     #application.add_handler(CommandHandler("week", week_type))
     #application.add_handler(CommandHandler("reg", reg))
