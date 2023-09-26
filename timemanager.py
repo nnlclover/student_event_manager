@@ -29,15 +29,12 @@ def make_malling(message) -> None:
 #------------------------------------------------------------------------------
 
 def eclipse() -> None:
-    current_datetime = datetime.datetime.now()
-
-    print(f"[{current_datetime}] minute")
     
-    now = datetime.datetime.now()
-    new_time = now + datetime.timedelta(minutes=5)    
+    import datetime
+    current_time = datetime.datetime.now()
+    new_time = current_time + datetime.timedelta(minutes=5)
     formatted_time = new_time.strftime("%H:%M")
-    
-    print(formatted_time)    
+    print("Время через 5 минут:", formatted_time)
 
     event = db.getEvent(formatted_time)
     print(event)
@@ -52,6 +49,7 @@ def eclipse() -> None:
 
 def thread_worker() -> None:
     schedule.every(1).minutes.do(eclipse)
+    eclipse()
 
     while True:
         schedule.run_pending()

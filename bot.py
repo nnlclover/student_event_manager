@@ -143,6 +143,43 @@ async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
               update.message.chat_id)
 
 #------------------------------------------------------------------------------
+# Sending a alarm
+#------------------------------------------------------------------------------
+last_command_time = 0
+
+async def alarm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    db.logging(update.message.text, update.message.chat_id)
+
+    global last_command_time
+    current_time = time.time()
+    if last_command_time + 300 > current_time:
+        db.logging("/alarm time block", update.message.chat_id)
+        return
+
+    last_command_time = current_time
+
+    users = db.getUsers()
+    
+    admin = None
+    for user in users:
+        if (user["state"] == 200 or user["state"] == 400) and user["chat_id"] == update.message.chat_id:
+            admin = user
+
+    if admin == None:
+        db.logging("/alarm unauthorized user", update.message.chat_id)
+        return
+
+    usss = []
+    for user in users:
+        if user["state"] == 200 or user["state"] == 400:
+            sendSimpleMessage(user["chat_id"], "PEREKLICHKA!")
+            usss.append(user["second_name"])
+
+    db.logging(f"/alarm Сообщения были отправлены {usss}",
+              update.message.chat_id)
+
+
+#------------------------------------------------------------------------------
 # Get all events at that day
 #------------------------------------------------------------------------------
 
@@ -189,7 +226,7 @@ def bot_begin(token) -> None:
     application.add_handler(CommandHandler("stop", stop))
     application.add_handler(CommandHandler("msg", msg))
     application.add_handler(CommandHandler("today", today))
-    #application.add_handler(CommandHandler("today", today))
+    application.add_handler(CommandHandler("alarm", alarm))
     #application.add_handler(CommandHandler("week", week_type))
     #application.add_handler(CommandHandler("reg", reg))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
