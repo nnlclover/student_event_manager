@@ -20,7 +20,7 @@ def make_malling(message) -> None:
             try:
                 print(user["second_name"])
                 text = f"Уважаемый {user['second_name']}! Через 5 минут {message}."
-                bot.sendSimpleMessage(user["chat_id"], message)
+                bot.sendSimpleMessage(user["chat_id"], text)
             except:
                 print("error send")
         

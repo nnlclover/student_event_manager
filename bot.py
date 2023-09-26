@@ -145,6 +145,8 @@ async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 #------------------------------------------------------------------------------
 # Sending a alarm
 #------------------------------------------------------------------------------
+
+# time marker when was used /alarm not more 20 per minute, because telegram will block bot
 last_command_time = 0
 
 async def alarm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
