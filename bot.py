@@ -132,7 +132,7 @@ async def msg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     usss = []
     for user in users:
-        if user["state"] == 200 or user["state"] == 400:
+        if user["state"] == 100 or user["state"] == 200 or user["state"] == 400:
             sendSimpleMessage(user["chat_id"], " ".join(context.args))
             usss.append(user["second_name"])
 
@@ -156,6 +156,9 @@ async def alarm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     current_time = time.time()
     if last_command_time + 300 > current_time:
         db.logging("/alarm time block", update.message.chat_id)
+        await update.message.reply_html( 
+          rf"timeout block",
+        )
         return
 
     last_command_time = current_time
@@ -192,7 +195,7 @@ async def today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     admin = None
     for user in users:
-        if (user["state"] == 200 or user["state"] == 400) and user["chat_id"] == update.message.chat_id:
+        if (user["state"] == 100 or user["state"] == 200 or user["state"] == 400) and user["chat_id"] == update.message.chat_id:
             admin = user
 
     if admin == None:

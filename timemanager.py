@@ -16,7 +16,7 @@ def make_malling(message) -> None:
     users = db.getUsers()
 
     for user in users:
-        if user["state"] == 200 or user["state"] == 400: 
+        if user["state"] == 100 or user["state"] == 200 or user["state"] == 400: 
             try:
                 print(user["second_name"])
                 text = f"Уважаемый камрад! Через 5 минут {message}."
@@ -30,7 +30,6 @@ def make_malling(message) -> None:
 
 def eclipse() -> None:
     
-    import datetime
     current_time = datetime.datetime.now()
     new_time = current_time + datetime.timedelta(minutes=5)
     formatted_time = new_time.strftime("%H:%M")
